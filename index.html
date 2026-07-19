@@ -1105,9 +1105,7 @@ function renderHeader(){
 function renderHome(){
   document.getElementById('tbar').style.display='none';
   const dn=totalTasksDone(),tot=totalTasksAll();
-  const hour=new Date().getHours();
-  const greet=hour<12?'Good morning':'hour<17'?'Good afternoon':'Good evening';
-  const greeting=hour<12?'Good morning':'Good evening';
+  const greeting='Hi'+(S.profile?.name?' '+S.profile.name:'');
   let courseCards=COURSES.map(c=>{
     const pct=coursePct(c.id);
     const weeks=c.weeks;let nextWeek=0,nextLabel='Start Week 1';
@@ -1134,7 +1132,7 @@ function renderHome(){
   document.getElementById('con').innerHTML=`
     <div class="home-hero">
       <div class="hero-label">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
-      <div class="hero-title">${greeting}, let's build your business 🚀</div>
+      <div class="hero-title">${escHtml(greeting)}, here's where you left off 🌺</div>
       <div class="hero-sub">You've completed ${dn} of ${tot} total tasks. Keep your momentum going.</div>
       <div class="hero-stats">
         <div class="hero-stat"><div class="hero-stat-num">${dn}</div><div class="hero-stat-lbl">Tasks done</div></div>
