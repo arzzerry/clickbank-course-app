@@ -578,6 +578,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .chart-empty{background:var(--card);border:1px dashed var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--text3);text-align:center;margin-bottom:14px}
 .chart-card svg text{font-family:var(--mono)}
 
+/* ── AI FEATURE GATING ── */
+[data-ai="off"] .ai-only{display:none}
+[data-ai="on"] .ai-note{display:none}
+.ai-note{font-size:11px;color:var(--text3);border:1px dashed var(--border);border-radius:var(--r);padding:8px 12px;margin-top:3px}
+
 /* ── RESPONSIVE / MOBILE ── */
 .menu-btn{display:none;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:18px;width:38px;height:38px;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;margin-right:12px}
 .mobile-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:8400;display:none;backdrop-filter:blur(2px)}
@@ -819,6 +824,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 const SD=JSON.parse(document.getElementById('SD').textContent);
 const COURSES=JSON.parse(document.getElementById('COURSES').textContent);
 const PRULES=JSON.parse(document.getElementById('PRULES').textContent);
+
+// AI config — injected at build time by gen.py. The web build ships with
+// enabled:false and an empty key; only the local build gets the real key.
+const AI={enabled:false,key:""};
+document.documentElement.setAttribute('data-ai',AI.enabled?'on':'off');
+function aiReady(){
+  if(!AI.enabled){showToast('AI generation is only available in the local edition.','🔒');return false;}
+  if(!AI.key){showToast('No API key found. Put your key in api_key.txt and rerun gen.py.','🔑');return false;}
+  return true;
+}
+function aiHeaders(){return{'Content-Type':'application/json','x-api-key':AI.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};}
 
 let isDark=localStorage.getItem('cbTheme')!=='light';
 document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
@@ -1329,11 +1345,13 @@ function renderHookGen(cid){
       <div class="fg"><div class="flbl">Target Audience</div><input class="ti" id="hk-aud" placeholder="e.g. Women 40–55 who've tried everything"></div>
       <div class="fg"><div class="flbl">Hook Style</div><select class="tsel" id="hk-tone"><option>Empathetic & relatable</option><option>Curious & mysterious</option><option>Direct & bold</option><option>Social proof driven</option></select></div>
     </div>
-    <button class="bb" id="hk-btn" onclick="genHooks('${cid}')" style="margin-top:3px">Generate Hooks ✨</button>
+    <button class="bb ai-only" id="hk-btn" onclick="genHooks('${cid}')" style="margin-top:3px">Generate Hooks ✨</button>
+    <div class="ai-note">🔒 AI hook generation is available in the local edition of the app.</div>
     <div class="ao" id="hk-out" style="display:none"></div>
   </div></div>`;
 }
 async function genHooks(cid){
+  if(!aiReady())return;
   const offer=document.getElementById('hk-offer')?.value?.trim();
   const aud=document.getElementById('hk-aud')?.value?.trim();
   const tone=document.getElementById('hk-tone')?.value;
@@ -1342,7 +1360,7 @@ async function genHooks(cid){
   const out=document.getElementById('hk-out');const btn=document.getElementById('hk-btn');if(!out||!btn)return;
   out.style.display='block';out.className='ao ld';out.textContent='Generating hooks with Claude...';btn.disabled=true;btn.textContent='Generating...';
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,messages:[{role:'user',content:`You are an expert affiliate marketing copywriter specializing in ClickBank weight loss offers. Generate hooks optimized for ${platform}.
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:aiHeaders(),body:JSON.stringify({model:'claude-opus-4-8',max_tokens:1200,messages:[{role:'user',content:`You are an expert affiliate marketing copywriter specializing in ClickBank weight loss offers. Generate hooks optimized for ${platform}.
 Offer: ${offer}
 Audience: ${aud||'women 35–58'}
 Style: ${tone}
@@ -1711,7 +1729,8 @@ function renderBridgeView(){
         <div class="field-group"><label class="field-label">Target Audience</label><input class="field-input" id="bp-audience" placeholder="e.g. Women 40–58 who have tried dieting and failed"></div>
         <div class="field-group"><label class="field-label">Unique Mechanism</label><input class="field-input" id="bp-mechanism" placeholder="e.g. A Japanese enzyme that reactivates slow metabolism"></div>
         <div class="field-group"><label class="field-label">Ad Platform</label><select class="field-sel" id="bp-platform"><option value="fb">Facebook / Instagram</option><option value="ms">Microsoft / Bing</option><option value="ga">Google Search</option></select></div>
-        <button class="gen-btn" id="bp-gen-btn" onclick="generateBridgePage()">✨ Generate Bridge Page Copy</button>
+        <button class="gen-btn ai-only" id="bp-gen-btn" onclick="generateBridgePage()">✨ Generate Bridge Page Copy</button>
+        <div class="ai-note">🔒 AI copy generation is available in the local edition of the app.</div>
       </div>
       <div class="bridge-output" id="bp-output">
         <div class="bridge-section"><div class="bridge-placeholder">Fill in your offer details on the left and click Generate. Claude will write your complete bridge page copy — headline, bullets, CTA, urgency line, and privacy blurb.</div></div>
@@ -1721,6 +1740,7 @@ function renderBridgeView(){
 }
 
 async function generateBridgePage(){
+  if(!aiReady())return;
   const name=document.getElementById('bp-name')?.value?.trim();
   const promise=document.getElementById('bp-promise')?.value?.trim();
   const audience=document.getElementById('bp-audience')?.value?.trim();
@@ -1734,7 +1754,7 @@ async function generateBridgePage(){
   out.innerHTML=`<div class="bridge-section"><div class="bridge-placeholder" style="color:var(--blue)">Claude is writing your bridge page copy...</div></div>`;
   const platformNote={'fb':'Facebook/Instagram feed (mobile-first, emotional, conversational)','ms':'Microsoft Bing search (intent-driven, slightly more formal, desktop audience 35-65)','ga':'Google Search (highly intent-driven, must match search query closely)'}[platform]||'Facebook';
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:`You are an expert ClickBank affiliate marketer writing bridge page copy for a weight loss offer. The traffic source is ${platformNote}.
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:aiHeaders(),body:JSON.stringify({model:'claude-opus-4-8',max_tokens:1500,messages:[{role:'user',content:`You are an expert ClickBank affiliate marketer writing bridge page copy for a weight loss offer. The traffic source is ${platformNote}.
 
 Offer: ${name||'Weight loss supplement'}
 Core promise: ${promise}
@@ -2217,7 +2237,8 @@ function renderEmailView(){
       </div>
       <div class="field-group"><label class="field-label">Your name / persona</label><input class="field-input" id="em-name" placeholder="e.g. Sarah or just 'a fellow woman who struggled with this'"></div>
       <div style="display:flex;gap:8px;margin-top:6px">
-        <button class="gen-btn" id="em-gen-btn" onclick="generateEmailSequence()" style="margin-top:0">✨ Generate All 7 Emails with AI</button>
+        <button class="gen-btn ai-only" id="em-gen-btn" onclick="generateEmailSequence()" style="margin-top:0">✨ Generate All 7 Emails with AI</button>
+        <div class="ai-note">🔒 AI email generation is available in the local edition of the app.</div>
         <button onclick="loadEmailTemplates()" style="background:none;border:1px solid var(--border);border-radius:var(--r);color:var(--text2);font-size:12px;padding:8px 14px;cursor:pointer;white-space:nowrap">Use Templates</button>
       </div>
     </div>
@@ -2265,6 +2286,7 @@ P.S. [Add a P.S. that reinforces the main point]
 }
 
 async function generateEmailSequence(){
+  if(!aiReady())return;
   const offer=document.getElementById('em-offer')?.value?.trim();
   const audience=document.getElementById('em-audience')?.value?.trim();
   const persona=document.getElementById('em-name')?.value?.trim();
@@ -2272,7 +2294,7 @@ async function generateEmailSequence(){
   const btn=document.getElementById('em-gen-btn');if(!btn)return;
   btn.disabled=true;btn.textContent='Generating 7 emails...';
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:`Write a 7-email follow-up sequence for a ClickBank weight loss affiliate. 
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:aiHeaders(),body:JSON.stringify({model:'claude-opus-4-8',max_tokens:4000,messages:[{role:'user',content:`Write a 7-email follow-up sequence for a ClickBank weight loss affiliate. 
 
 Offer: ${offer}
 Audience: ${audience||'women 35-58 who want to lose weight'}
