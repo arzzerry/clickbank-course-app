@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Crect%20width%3D%2724%27%20height%3D%2724%27%20rx%3D%276%27%20fill%3D%27%237C3AED%27%2F%3E%3Cg%20transform%3D%27translate%282.4%202.4%29%20scale%280.8%29%27%3E%3Cg%20fill%3D%27rgba%28255%2C255%2C255%2C.95%29%27%3E%3Cellipse%20cx%3D%2712%27%20cy%3D%276.6%27%20rx%3D%272.6%27%20ry%3D%274.4%27%2F%3E%3Cellipse%20cx%3D%2712%27%20cy%3D%276.6%27%20rx%3D%272.6%27%20ry%3D%274.4%27%20transform%3D%27rotate%2872%2012%2012%29%27%2F%3E%3Cellipse%20cx%3D%2712%27%20cy%3D%276.6%27%20rx%3D%272.6%27%20ry%3D%274.4%27%20transform%3D%27rotate%28144%2012%2012%29%27%2F%3E%3Cellipse%20cx%3D%2712%27%20cy%3D%276.6%27%20rx%3D%272.6%27%20ry%3D%274.4%27%20transform%3D%27rotate%28216%2012%2012%29%27%2F%3E%3Cellipse%20cx%3D%2712%27%20cy%3D%276.6%27%20rx%3D%272.6%27%20ry%3D%274.4%27%20transform%3D%27rotate%28288%2012%2012%29%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%272.5%27%20fill%3D%27rgba%2849%2C46%2C129%2C.85%29%27%2F%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%271.1%27%20fill%3D%27rgba%28255%2C255%2C255%2C.9%29%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <title>Orchidium v3.1 · Mission Control</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -59,7 +60,8 @@ body{zoom:1.1}
 .sidebar-header{padding:18px 16px 14px;border-bottom:1px solid var(--sborder);flex-shrink:0}
 .logo{display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer}
 .logo:hover{filter:brightness(1.15)}
-.logo-icon{width:32px;height:32px;background:var(--btn-grad);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 20px rgba(79,70,229,.5)}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#6366F1,#A855F7);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 20px rgba(139,92,246,.5)}
+.logo-icon svg{display:block}
 .logo-text{font-size:13px;font-weight:700;color:var(--logo-text);letter-spacing:.02em}
 .logo-sub{font-size:10px;color:var(--snav-text);font-family:var(--mono)}
 .v-badge{font-size:10px;background:var(--badge-bg);color:var(--badge-color);border-radius:5px;padding:2px 7px;font-family:var(--mono);margin-left:auto;border:1px solid rgba(255,255,255,.1)}
@@ -740,7 +742,7 @@ body{zoom:1.1}
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo" onclick="goHome()" title="Go to dashboard">
-        <div class="logo-icon">🌺</div>
+        <div class="logo-icon"><svg viewBox='0 0 24 24' width='20' height='20' xmlns='http://www.w3.org/2000/svg'><g fill='rgba(255,255,255,.95)'><ellipse cx='12' cy='6.6' rx='2.6' ry='4.4'/><ellipse cx='12' cy='6.6' rx='2.6' ry='4.4' transform='rotate(72 12 12)'/><ellipse cx='12' cy='6.6' rx='2.6' ry='4.4' transform='rotate(144 12 12)'/><ellipse cx='12' cy='6.6' rx='2.6' ry='4.4' transform='rotate(216 12 12)'/><ellipse cx='12' cy='6.6' rx='2.6' ry='4.4' transform='rotate(288 12 12)'/></g><circle cx='12' cy='12' r='2.5' fill='rgba(49,46,129,.85)'/><circle cx='12' cy='12' r='1.1' fill='rgba(255,255,255,.9)'/></svg></div>
         <div>
           <div class="logo-text">Orchidium</div>
           <div class="logo-sub">Mission Control</div>
